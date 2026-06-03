@@ -1,0 +1,1117 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0d0d0d">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="MediCare Pro">
+<title>MediCare Pro</title>
+
+<style>
+:root {
+  --bg:#0d0d0d;--bg2:#141414;--surface:#1a1a1a;--surface2:#222222;
+  --border:#333333;--border2:#444444;
+  --green:#CC0000;--gl:#FF3333;--gp:#FFFFFF;--gd:rgba(204,0,0,.12);--gg:rgba(204,0,0,.30);
+  --amber:#CC0000;--ad:rgba(204,0,0,.10);--ag:rgba(204,0,0,.22);
+  --red:#FF4444;--rd:rgba(255,68,68,.1);--rg:rgba(255,68,68,.25);
+  --blue:#5b9cf6;--bd:rgba(91,156,246,.1);
+  --text:#F0F0F0;--td:#AAAAAA;--tm:#666666;
+  --fd:'Georgia','Times New Roman',serif;--fb:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  --r:14px;--rs:10px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:var(--fb);background:var(--bg);color:var(--text);min-height:100dvh;display:flex;flex-direction:column;overflow-x:hidden;overscroll-behavior:none}
+
+/* HEADER */
+header{position:sticky;top:0;z-index:100;background:linear-gradient(180deg,#000000,var(--surface));border-bottom:1px solid var(--border);padding:12px 16px 10px;display:flex;align-items:center;gap:10px}
+.logo{display:flex;align-items:center;gap:8px;flex:1}
+.logo-mark{width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,#CC0000,#880000);display:flex;align-items:center;justify-content:center;font-size:15px;box-shadow:0 4px 12px var(--gg)}
+.logo h1{font-family:var(--fd);font-size:19px;color:var(--gp);letter-spacing:-.3px}
+.pro-badge{font-size:9px;background:#CC0000;color:#FFFFFF;padding:1px 5px;border-radius:4px;font-weight:700;letter-spacing:.5px}
+#live-clock{font-size:11px;color:var(--tm);font-variant-numeric:tabular-nums;font-weight:500}
+.hbtn{width:32px;height:32px;border-radius:8px;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:14px;cursor:pointer;color:var(--td);transition:all .2s}
+.hbtn:active{background:var(--border)}
+
+/* SYNC STATUS */
+#sync-bar{padding:6px 16px;font-size:11px;font-weight:600;display:flex;align-items:center;gap:7px;border-bottom:1px solid var(--border)}
+#sync-bar.ok{background:rgba(204,0,0,.10);color:#FF3333}
+#sync-bar.err{background:var(--rd);color:var(--red)}
+#sync-bar.loading{background:var(--ad);color:var(--amber)}
+.sync-dot{width:6px;height:6px;border-radius:50%;background:currentColor;animation:blink 1.4s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+
+/* PATIENT STRIP */
+#p-strip{background:var(--surface);border-bottom:1px solid var(--border);padding:8px 16px;display:none;align-items:center;gap:10px}
+.p-av{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#CC0000,#880000);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:white;flex-shrink:0}
+.p-nm{font-size:13px;font-weight:600;flex:1}
+.p-mt{font-size:10px;color:var(--tm)}
+.share-pill{background:var(--gd);border:1px solid var(--green);color:var(--gl);padding:4px 11px;border-radius:100px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;transition:all .2s}
+.share-pill:active{background:#CC0000;color:#FFFFFF}
+
+/* TABS */
+.tabs{display:flex;background:var(--bg2);border-bottom:1px solid var(--border);overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex-shrink:0;padding:10px 13px;font-size:12px;font-weight:600;color:var(--tm);cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap;user-select:none}
+.tab.active{color:#FF3333;border-color:#CC0000}
+
+/* MAIN */
+main{flex:1;padding:13px 15px 88px;display:flex;flex-direction:column;gap:10px}
+.page{display:none;flex-direction:column;gap:10px}
+.page.active{display:flex}
+
+/* CARDS */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:13px}
+.card-title{font-family:var(--fd);font-size:16px;color:var(--gp);margin-bottom:11px}
+.sec-lbl{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--tm);font-weight:700;padding:3px 0 1px}
+
+/* NOTIF */
+.notif-warn{background:var(--ad);border:1px solid var(--amber);border-radius:var(--rs);padding:10px 12px;display:flex;align-items:center;gap:8px;font-size:12px}
+.notif-warn button{margin-left:auto;background:#CC0000;border:none;border-radius:7px;padding:5px 11px;font-family:var(--fb);font-size:11px;font-weight:700;cursor:pointer;color:#FFFFFF;white-space:nowrap}
+
+/* DAY HEADER */
+.day-head{display:flex;align-items:baseline;gap:10px}
+.day-title{font-family:var(--fd);font-size:22px}
+.day-sub{font-size:12px;color:var(--td)}
+
+/* PROGRESS RING */
+.prog-wrap{display:flex;align-items:center;gap:13px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:13px}
+.ring-box{position:relative;width:64px;height:64px;flex-shrink:0}
+.ring-box svg{transform:rotate(-90deg)}
+.r-bg{fill:none;stroke:var(--border);stroke-width:7}
+.r-fg{fill:none;stroke:#CC0000;stroke-width:7;stroke-linecap:round;transition:stroke-dashoffset .7s cubic-bezier(.4,0,.2,1)}
+.r-center{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:var(--gl)}
+.prog-info .big{font-family:var(--fd);font-size:20px}
+.prog-info .sub{font-size:12px;color:var(--td);margin-top:2px}
+.live-dot{display:inline-flex;align-items:center;gap:5px;background:rgba(204,0,0,.12);border:1px solid #CC0000;border-radius:100px;padding:2px 8px;font-size:10px;font-weight:700;color:#FF3333;margin-top:7px}
+.live-dot span{width:5px;height:5px;border-radius:50%;background:#CC0000;animation:blink 1.4s infinite}
+
+/* MED CARDS */
+.time-group{display:flex;flex-direction:column;gap:7px}
+.tg-lbl{font-size:11px;color:var(--tm);font-weight:700;display:flex;align-items:center;gap:8px}
+.tg-lbl::after{content:'';flex:1;height:1px;background:var(--border)}
+.med-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:11px 13px;display:flex;align-items:center;gap:11px;position:relative;overflow:hidden;transition:all .2s}
+.med-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--cc,var(--green));border-radius:0 3px 3px 0}
+.med-card.taken{opacity:.42}
+.med-card.taken .mc-name{text-decoration:line-through}
+.med-card.due{border-color:#CC0000;background:rgba(204,0,0,.10);box-shadow:0 0 12px rgba(204,0,0,.25)}
+.med-card.overdue{border-color:var(--red);box-shadow:0 0 8px var(--rg)}
+.mc-icon{width:40px;height:40px;border-radius:11px;background:var(--cd,var(--gd));display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0}
+.mc-body{flex:1;min-width:0}
+.mc-name{font-weight:600;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mc-sub{font-size:11px;color:var(--td);margin-top:2px}
+.mc-dose{font-size:12px;color:var(--gl);font-weight:600;margin-top:3px}
+.mc-right{display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0}
+.tbadge{background:var(--surface2);border:1px solid var(--border);padding:3px 8px;border-radius:7px;font-size:12px;font-weight:700;font-variant-numeric:tabular-nums}
+.chk{width:26px;height:26px;border-radius:50%;border:2px solid var(--border2);background:transparent;display:flex;align-items:center;justify-content:center;font-size:12px;cursor:pointer;transition:all .2s;flex-shrink:0}
+.chk.on{background:#CC0000;border-color:#CC0000;color:white}
+.empty{text-align:center;padding:34px 20px;color:var(--tm)}
+.empty .ico{font-size:42px;margin-bottom:9px}
+.empty p{font-size:13px;line-height:1.6}
+
+/* WEEK STRIP */
+.week-strip{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.wd{display:flex;flex-direction:column;align-items:center;padding:7px 3px;border-radius:10px;cursor:pointer;background:var(--surface);border:1px solid var(--border);transition:all .2s}
+.wd.active{background:#CC0000;border-color:#CC0000;color:#FFFFFF}
+.wd-n{font-size:9px;font-weight:700;text-transform:uppercase;opacity:.6}
+.wd-d{font-size:14px;font-weight:700}
+.wd-dot{width:4px;height:4px;border-radius:50%;background:var(--amber);margin-top:2px}
+.wd.active .wd-dot{background:var(--bg)}
+
+/* HISTORY */
+.compliance-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:4px}
+.c-tile{background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);padding:11px;display:flex;flex-direction:column;align-items:center;gap:2px}
+.c-tile .big{font-family:var(--fd);font-size:24px}
+.c-tile .lbl{font-size:10px;color:var(--tm);text-transform:uppercase;letter-spacing:.8px;font-weight:600;text-align:center}
+.c-tile.good .big{color:#FF3333}.c-tile.warn .big{color:var(--amber)}.c-tile.bad .big{color:var(--red)}
+.hist-week{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:13px;margin-bottom:8px}
+.hist-week-title{font-size:12px;font-weight:700;color:var(--td);margin-bottom:9px}
+.hist-week-bar{display:flex;gap:3px}
+.hday{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px}
+.hday-lbl{font-size:9px;color:var(--tm);font-weight:600}
+.hday-bw{width:100%;height:58px;background:var(--bg2);border-radius:5px;position:relative;overflow:hidden}
+.hday-bf{position:absolute;bottom:0;left:0;right:0;background:var(--green);border-radius:5px;transition:height .5s ease}
+.hday-bf.partial{background:#888888}.hday-bf.zero{background:var(--red);height:4px!important}
+.hday-pct{font-size:10px;font-weight:700;color:var(--td)}
+.hist-detail{margin-top:9px}
+.hist-row{display:flex;align-items:center;gap:9px;padding:7px 0;border-bottom:1px solid var(--border);font-size:12px}
+.hist-row:last-child{border-bottom:none}
+.hist-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.hist-name{flex:1;font-weight:500}
+
+/* DOCTOR */
+.doc-card{background:linear-gradient(135deg,#1a1a1a,#111111);border:1px solid #444444;border-radius:var(--r);padding:15px;display:flex;align-items:center;gap:13px}
+.doc-av{width:50px;height:50px;border-radius:13px;background:linear-gradient(135deg,#1a1a1a,#333333);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;box-shadow:0 4px 12px rgba(91,156,246,.2)}
+.doc-name{font-family:var(--fd);font-size:16px;color:#FFFFFF}
+.doc-spec{font-size:12px;color:var(--td);margin-top:2px}
+.contact-row{display:flex;align-items:center;gap:11px;background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);padding:11px 13px;cursor:pointer;transition:all .2s;text-decoration:none;color:inherit}
+.contact-row:active{background:var(--surface2)}
+.ci{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.ci.tel{background:#1a0000}.ci.wha{background:#1a0000}.ci.mail{background:#111111}.ci.urg{background:#330000}
+.cl{flex:1}.cl .ct{font-size:13px;font-weight:600}.cl .cv{font-size:11px;color:var(--td)}
+.note-box{background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);padding:11px;font-size:13px;line-height:1.6;color:var(--td);white-space:pre-wrap}
+
+/* SETTINGS */
+.smi{background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);padding:11px 13px;display:flex;align-items:center;gap:10px;margin-bottom:7px;cursor:pointer;transition:border-color .2s}
+.smi:active{border-color:var(--green)}
+.smi-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.smi-name{font-size:14px;font-weight:600;flex:1}
+.smi-times{font-size:11px;color:var(--tm)}
+
+/* GS PANEL */
+.gs-panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:13px}
+.gs-st{display:flex;align-items:center;gap:7px;padding:9px 11px;border-radius:var(--rs);font-size:12px;font-weight:600;margin-bottom:10px}
+.gs-st.ok{background:rgba(204,0,0,.10);border:1px solid #CC0000;color:#FF3333}
+.gs-st.err{background:var(--rd);border:1px solid var(--red);color:var(--red)}
+.gs-dot2{width:6px;height:6px;border-radius:50%}
+.gs-st.ok .gs-dot2{background:#CC0000;animation:blink 1.4s infinite}
+.gs-st.err .gs-dot2{background:var(--red)}
+
+/* FAB */
+.fab{position:fixed;bottom:20px;right:16px;width:52px;height:52px;border-radius:16px;background:#CC0000;border:none;display:flex;align-items:center;justify-content:center;font-size:23px;color:#FFFFFF;box-shadow:0 8px 24px rgba(204,0,0,.4);cursor:pointer;z-index:50;transition:transform .2s,box-shadow .2s}
+.fab:active{transform:scale(.93)}
+
+/* MODALS */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.78);backdrop-filter:blur(8px);z-index:200;display:flex;align-items:flex-end;opacity:0;pointer-events:none;transition:opacity .25s}
+.overlay.show{opacity:1;pointer-events:all}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:22px 22px 0 0;padding:19px 17px 34px;width:100%;transform:translateY(50px);transition:transform .3s cubic-bezier(.34,1.56,.64,1);max-height:92dvh;overflow-y:auto}
+.overlay.show .modal{transform:translateY(0)}
+.mhandle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 17px}
+.mtitle{font-family:var(--fd);font-size:20px;color:var(--gp);margin-bottom:15px}
+
+/* FORMS */
+.fg{display:flex;flex-direction:column;gap:5px;margin-bottom:12px}
+label{font-size:11px;font-weight:700;color:var(--td);letter-spacing:.4px}
+input,select,textarea{background:var(--bg);border:1px solid var(--border);border-radius:var(--rs);color:var(--text);font-family:var(--fb);font-size:14px;padding:10px 12px;width:100%;outline:none;transition:border-color .2s;-webkit-appearance:none}
+input:focus,select:focus,textarea:focus{border-color:var(--green)}
+input[type="color"]{height:42px;padding:5px 8px;cursor:pointer}
+input[type="time"]{color-scheme:dark}
+select option{background:var(--surface)}
+textarea{resize:vertical;min-height:65px}
+.times-wrap{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:7px}
+.tchip{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:6px 10px;font-size:13px;font-weight:700;display:flex;align-items:center;gap:5px}
+.tchip .x{color:var(--red);font-size:15px;cursor:pointer}
+.day-picks{display:flex;gap:5px;flex-wrap:wrap}
+.dpick{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:5px 8px;font-size:12px;cursor:pointer;user-select:none;transition:all .15s}
+.dpick.on{background:#CC0000;border-color:#CC0000;color:#FFFFFF;font-weight:700}
+.btn{width:100%;padding:12px;border-radius:var(--rs);font-family:var(--fb);font-size:14px;font-weight:700;cursor:pointer;border:none;transition:all .2s;margin-top:6px}
+.btn-p{background:#CC0000;color:#FFFFFF}.btn-p:active{background:#FF2222}
+.btn-d{background:var(--rd);color:var(--red);border:1px solid var(--red)}
+.btn-g{background:var(--surface2);color:var(--td);border:1px solid var(--border)}
+.add-t-row{display:flex;gap:6px}
+.add-t-row input{flex:1}
+.add-t-row button{background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);padding:0 13px;font-family:var(--fb);font-size:13px;font-weight:700;cursor:pointer;color:var(--td);white-space:nowrap;transition:all .2s}
+.add-t-row button:active{background:#CC0000;color:#FFFFFF;border-color:#CC0000}
+.code-box{background:var(--bg);border:1px solid var(--border);border-radius:var(--rs);padding:15px;text-align:center}
+.code-big{font-family:monospace;font-size:28px;font-weight:700;letter-spacing:8px;color:#FF3333;margin:6px 0}
+.code-note{font-size:11px;color:var(--tm)}
+.join-row{display:flex;gap:6px}
+.join-row input{flex:1;text-align:center;letter-spacing:4px;font-size:17px;font-weight:700}
+.join-row button{background:#CC0000;border:none;border-radius:var(--rs);padding:0 13px;font-family:var(--fb);font-size:13px;font-weight:700;cursor:pointer;color:#FFFFFF;white-space:nowrap}
+.alert-card{background:linear-gradient(135deg,rgba(204,0,0,.12),transparent);border:1px solid #CC0000;border-radius:var(--r);padding:20px;text-align:center}
+.alert-ico{font-size:42px;margin-bottom:8px}
+.alert-name{font-family:var(--fd);font-size:21px;color:#FF3333}
+.alert-det{font-size:13px;color:var(--td);margin-top:4px}
+
+/* LOADING SCREEN */
+#loading{position:fixed;inset:0;background:#0d0d0d;z-index:999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px}
+#loading .logo-big{font-size:56px}
+#loading h2{font-family:var(--fd);font-size:24px;color:#FFFFFF}
+#loading p{font-size:13px;color:var(--tm)}
+.spinner{width:32px;height:32px;border:3px solid #333333;border-top-color:#CC0000;border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* TOAST */
+#toast{position:fixed;bottom:84px;left:50%;transform:translateX(-50%) translateY(16px);background:#1a1a1a;border:1px solid #333;border-radius:10px;padding:8px 16px;font-size:12px;font-weight:600;color:#FF3333;z-index:999;opacity:0;transition:all .3s;pointer-events:none;white-space:nowrap}
+
+::-webkit-scrollbar{width:3px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+</style>
+
+<link rel="manifest" id="manifest-placeholder">
+<script>
+// Register Service Worker for offline cache
+if ('serviceWorker' in navigator) {
+  const swCode = `
+const CACHE = 'medicare-v1';
+const URLS = [
+  'https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js',
+  'https://www.gstatic.com/firebasejs/11.0.0/firebase-database.js'
+];
+self.addEventListener('install', e => {
+  e.waitUntil(caches.open(CACHE).then(c => c.addAll(URLS).catch(()=>{})));
+  self.skipWaiting();
+});
+self.addEventListener('activate', e => { e.waitUntil(self.clients.claim()); });
+self.addEventListener('fetch', e => {
+  e.respondWith(
+    caches.match(e.request).then(r => r || fetch(e.request).then(res => {
+      const clone = res.clone();
+      caches.open(CACHE).then(c => c.put(e.request, clone));
+      return res;
+    }))
+  );
+});
+  `;
+  const blob = new Blob([swCode], {type:'application/javascript'});
+  const url  = URL.createObjectURL(blob);
+  navigator.serviceWorker.register(url).catch(()=>{});
+}
+</script>
+</head>
+<body>
+
+<!-- LOADING -->
+<div id="loading">
+  <div class="logo-big">💊</div>
+  <h2>MediCare Pro</h2>
+  <div class="spinner"></div>
+  <p id="loading-msg">Iniciando...</p>
+</div>
+
+<!-- HEADER -->
+<header>
+  <div class="logo">
+    <div class="logo-mark">💊</div>
+    <h1>MediCare</h1>
+    <span class="pro-badge">PRO</span>
+  </div>
+  <span id="live-clock"></span>
+  <button class="hbtn" onclick="openModal('share-modal')">🔗</button>
+  <button class="hbtn" onclick="openPatientModal()">👤</button>
+</header>
+
+<!-- SYNC BAR -->
+<div id="sync-bar" class="loading">
+  <span class="sync-dot"></span>
+  <span id="sync-txt">Conectando...</span>
+</div>
+
+<!-- PATIENT STRIP -->
+<div id="p-strip">
+  <div class="p-av" id="p-av">?</div>
+  <div>
+    <div class="p-nm" id="p-nm">—</div>
+    <div class="p-mt" id="p-mt">—</div>
+  </div>
+  <button class="share-pill" onclick="openModal('share-modal')">📤 Compartir</button>
+</div>
+
+<!-- TABS -->
+<div class="tabs">
+  <div class="tab active"  onclick="sw('today')">📅 Hoy</div>
+  <div class="tab"         onclick="sw('week')">🗓 Semana</div>
+  <div class="tab"         onclick="sw('history')">📊 Historial</div>
+  <div class="tab"         onclick="sw('doctor')">👨‍⚕️ Médico</div>
+  <div class="tab"         onclick="sw('settings')">⚙️ Config</div>
+</div>
+
+<!-- MAIN -->
+<main>
+
+  <!-- TODAY -->
+  <div id="page-today" class="page active">
+    <div id="notif-warn" class="notif-warn" style="display:none">
+      <span>🔔 Activá notificaciones</span>
+      <button onclick="reqNotif()">Activar</button>
+    </div>
+    <div class="day-head">
+      <div class="day-title" id="t-title">—</div>
+      <div class="day-sub" id="t-sub">—</div>
+    </div>
+    <div id="prog-wrap" class="prog-wrap" style="display:none">
+      <div class="ring-box">
+        <svg width="64" height="64" viewBox="0 0 64 64">
+          <circle class="r-bg" cx="32" cy="32" r="25"/>
+          <circle class="r-fg" id="r-fg" cx="32" cy="32" r="25"
+            stroke-dasharray="157.1" stroke-dashoffset="157.1"/>
+        </svg>
+        <div class="r-center" id="r-pct">0%</div>
+      </div>
+      <div class="prog-info">
+        <div class="big" id="r-frac">0/0</div>
+        <div class="sub">dosis tomadas hoy</div>
+        <div class="live-dot"><span></span> En vivo</div>
+      </div>
+    </div>
+    <div id="today-sched"></div>
+  </div>
+
+  <!-- WEEK -->
+  <div id="page-week" class="page">
+    <div class="week-strip" id="week-strip"></div>
+    <div id="week-sched"></div>
+  </div>
+
+  <!-- HISTORY -->
+  <div id="page-history" class="page">
+    <div class="sec-lbl">Cumplimiento — últimas 4 semanas</div>
+    <div class="compliance-grid" id="comp-grid"></div>
+    <div id="hist-weeks"></div>
+  </div>
+
+  <!-- DOCTOR -->
+  <div id="page-doctor" class="page">
+    <div id="doc-display"><div class="empty"><div class="ico">👨‍⚕️</div><p>Sin datos del médico.<br>Tocá el botón para agregar.</p></div></div>
+    <button class="btn btn-p" onclick="openDoctorModal()">+ Agregar / Editar médico</button>
+  </div>
+
+  <!-- SETTINGS -->
+  <div id="page-settings" class="page">
+    <div class="sec-lbl">Medicamentos</div>
+    <div id="s-meds-list"></div>
+
+    <div class="sec-lbl" style="margin-top:8px">Google Sheets (opcional)</div>
+    <div class="gs-panel">
+      <div class="gs-st err" id="gs-st"><span class="gs-dot2"></span><span id="gs-txt">No configurado</span></div>
+      <div class="fg"><label>URL del Web App</label><input id="gs-url" type="url" placeholder="https://script.google.com/macros/s/..."></div>
+      <button class="btn btn-p" onclick="saveGS()">Guardar y probar</button>
+      <button class="btn btn-g" onclick="syncGS()" style="margin-top:5px">☁️ Sincronizar ahora</button>
+    </div>
+
+    <div class="sec-lbl" style="margin-top:8px">Paciente</div>
+    <button class="btn btn-g" onclick="openPatientModal()">👤 Editar paciente</button>
+    <button class="btn btn-d" onclick="resetApp()" style="margin-top:5px">🗑 Borrar todos los datos</button>
+  </div>
+
+</main>
+
+<button class="fab" id="fab" onclick="openAddMed()">＋</button>
+
+<!-- ════════ MODALS ════════ -->
+
+<!-- MED -->
+<div class="overlay" id="med-modal">
+  <div class="modal">
+    <div class="mhandle"></div>
+    <div class="mtitle" id="med-mtitle">Nuevo Medicamento</div>
+    <div class="fg"><label>Nombre *</label><input id="m-name" placeholder="Tacrolimus, Micofenolato..."></div>
+    <div class="fg"><label>Forma farmacéutica</label>
+      <select id="m-form">
+        <option>💊 Comprimido</option><option>🔵 Cápsula</option>
+        <option>💉 Inyección</option><option>🧴 Jarabe</option>
+        <option>💧 Gotas</option><option>🩹 Parche</option>
+        <option>🫁 Inhalador</option><option>🍶 Solución IV</option>
+      </select>
+    </div>
+    <div class="fg"><label>Dosis</label><input id="m-dose" placeholder="1mg · 500mg · 2 comp..."></div>
+    <div class="fg"><label>Instrucciones</label><input id="m-notes" placeholder="con comida · en ayunas..."></div>
+    <div class="fg"><label>Color</label><input id="m-color" type="color" value="#3eb575"></div>
+    <div class="fg">
+      <label>Horarios</label>
+      <div class="times-wrap" id="times-wrap"></div>
+      <div class="add-t-row"><input type="time" id="m-time-inp"><button onclick="addTime()">+ Agregar</button></div>
+    </div>
+    <div class="fg">
+      <label>Días</label>
+      <div class="day-picks" id="day-picks">
+        <span class="dpick" data-d="0">Dom</span><span class="dpick" data-d="1">Lun</span>
+        <span class="dpick" data-d="2">Mar</span><span class="dpick" data-d="3">Mié</span>
+        <span class="dpick" data-d="4">Jue</span><span class="dpick" data-d="5">Vie</span>
+        <span class="dpick" data-d="6">Sáb</span>
+      </div>
+    </div>
+    <button class="btn btn-p" onclick="saveMed()">💾 Guardar</button>
+    <button class="btn btn-d" id="del-btn" style="display:none" onclick="deleteMed()">🗑 Eliminar</button>
+    <button class="btn btn-g" onclick="closeModal('med-modal')">Cancelar</button>
+  </div>
+</div>
+
+<!-- PATIENT -->
+<div class="overlay" id="patient-modal">
+  <div class="modal">
+    <div class="mhandle"></div>
+    <div class="mtitle">Datos del Paciente</div>
+    <div class="fg"><label>Nombre completo</label><input id="p-name" placeholder="Nombre del paciente"></div>
+    <div class="fg"><label>Tipo de trasplante</label>
+      <select id="p-type"><option>Renal</option><option>Hepático</option><option>Cardíaco</option><option>Pulmonar</option><option>Páncreas</option><option>Médula Ósea</option><option>Otro</option></select>
+    </div>
+    <div class="fg"><label>Fecha del trasplante</label><input id="p-tdate" type="date"></div>
+    <div class="fg"><label>Centro de trasplante</label><input id="p-center" placeholder="Hospital..."></div>
+    <button class="btn btn-p" onclick="savePatient()">Guardar</button>
+    <button class="btn btn-g" onclick="closeModal('patient-modal')">Cancelar</button>
+  </div>
+</div>
+
+<!-- DOCTOR -->
+<div class="overlay" id="doctor-modal">
+  <div class="modal">
+    <div class="mhandle"></div>
+    <div class="mtitle">Datos del Médico</div>
+    <div class="fg"><label>Nombre</label><input id="d-name" placeholder="Dr. García..."></div>
+    <div class="fg"><label>Especialidad</label><input id="d-spec" placeholder="Nefrología..."></div>
+    <div class="fg"><label>Hospital</label><input id="d-inst" placeholder="Hospital..."></div>
+    <div class="fg"><label>Teléfono consultorio</label><input id="d-tel" type="tel" placeholder="+54 11 xxxx-xxxx"></div>
+    <div class="fg"><label>WhatsApp</label><input id="d-wa" type="tel" placeholder="+54 9 11 xxxx-xxxx"></div>
+    <div class="fg"><label>Email</label><input id="d-email" type="email" placeholder="medico@hospital.com"></div>
+    <div class="fg"><label>🚨 Urgencias / Guardia</label><input id="d-urg" type="tel" placeholder="Número de guardia..."></div>
+    <div class="fg"><label>Próxima cita</label><input id="d-appt" type="datetime-local"></div>
+    <div class="fg"><label>Notas / Indicaciones</label><textarea id="d-notes" placeholder="Indicaciones especiales..."></textarea></div>
+    <button class="btn btn-p" onclick="saveDoctor()">Guardar</button>
+    <button class="btn btn-g" onclick="closeModal('doctor-modal')">Cancelar</button>
+  </div>
+</div>
+
+<!-- SHARE -->
+<div class="overlay" id="share-modal">
+  <div class="modal">
+    <div class="mhandle"></div>
+    <div class="mtitle">📤 Compartir seguimiento</div>
+    <p style="font-size:12px;color:var(--td);margin-bottom:13px">Todos los celulares con este código ven los mismos datos en tiempo real.</p>
+    <div class="code-box">
+      <div class="code-note">Código del paciente</div>
+      <div class="code-big" id="share-code">----</div>
+      <div class="code-note">Compartí este código o el link</div>
+    </div>
+    <button class="btn btn-p" style="margin-top:11px" onclick="copyLink()">📋 Copiar link</button>
+    <div style="border-top:1px solid var(--border);margin:15px 0;padding-top:13px">
+      <div class="sec-lbl" style="margin-bottom:8px">Unirse con código de otro paciente</div>
+      <div class="join-row">
+        <input id="join-inp" placeholder="CÓDIGO" maxlength="6">
+        <button onclick="joinCode()">Unirse</button>
+      </div>
+    </div>
+    <button class="btn btn-g" onclick="closeModal('share-modal')">Cerrar</button>
+  </div>
+</div>
+
+<!-- ALERT -->
+<div class="overlay" id="alert-modal">
+  <div class="modal">
+    <div class="mhandle"></div>
+    <div class="alert-card">
+      <div class="alert-ico" id="al-ico">💊</div>
+      <div class="alert-name" id="al-name">Medicamento</div>
+      <div class="alert-det" id="al-det">Hora de tomar</div>
+    </div>
+    <button class="btn btn-p" style="margin-top:13px" onclick="markAlertTaken()">✅ Marcar como tomado</button>
+    <button class="btn btn-g" onclick="snoozeAlert()">⏰ Posponer 10 min</button>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<!-- ════════ FIREBASE + APP JS ════════ -->
+<script type="module" async>
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
+import { getDatabase, ref, set, get, update, onValue, push, remove }
+  from "https://www.gstatic.com/firebasejs/11.0.0/firebase-database.js";
+
+// ── FIREBASE CONFIG ──────────────────────────────────────────
+const firebaseConfig = {
+  apiKey: "AIzaSyBuVOTHW7FTxJU71V_mQ5agESj_GipJneU",
+  authDomain: "medicare-pro-lichi.firebaseapp.com",
+  databaseURL: "https://medicare-pro-lichi-default-rtdb.firebaseio.com",
+  projectId: "medicare-pro-lichi",
+  storageBucket: "medicare-pro-lichi.firebasestorage.app",
+  messagingSenderId: "496445066063",
+  appId: "1:496445066063:web:b76dab1efc7e85de90933a"
+};
+
+const fbApp = initializeApp(firebaseConfig);
+const db    = getDatabase(fbApp);
+
+// ── CONSTANTS ────────────────────────────────────────────────
+const DAYS  = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+const MONTHS= ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+const CIRC  = 2 * Math.PI * 25; // svg r=25
+
+// ── LOCAL STATE (mirror of Firebase) ────────────────────────
+let CODE     = null;   // patient code (Firebase key)
+let PATIENT  = {};
+let DOCTOR   = {};
+let MEDS     = [];     // array
+let LOG      = {};     // { 'YYYY-MM-DD_medId_HH:mm': timestamp }
+let GS       = { url: '', connected: false };
+
+let editId   = null;
+let curTimes = [];
+let selDays  = [0,1,2,3,4,5,6];
+let selCalDay= null;
+let alertPending = null;
+let activeTab    = 'today';
+let notifTimers  = [];
+
+// ── FIREBASE REFS ────────────────────────────────────────────
+const codeRef    = () => ref(db, `patients/${CODE}`);
+const patientRef = () => ref(db, `patients/${CODE}/patient`);
+const doctorRef  = () => ref(db, `patients/${CODE}/doctor`);
+const medsRef    = () => ref(db, `patients/${CODE}/meds`);
+const logRef     = () => ref(db, `patients/${CODE}/log`);
+
+// ── INIT ─────────────────────────────────────────────────────
+async function init() {
+  // Load or create code
+  let storedCode = localStorage.getItem('mcp_code');
+
+  // Check URL param (shared link)
+  const urlCode = new URLSearchParams(location.search).get('code');
+  if (urlCode) storedCode = urlCode.toUpperCase();
+
+  if (!storedCode) {
+    storedCode = Math.random().toString(36).substr(2,6).toUpperCase();
+    localStorage.setItem('mcp_code', storedCode);
+  }
+  CODE = storedCode;
+
+  const lm = document.getElementById('loading-msg');
+  if(lm) lm.textContent = 'Conectando...';
+  setSyncStatus('loading', 'Conectando con Firebase...');
+
+  try {
+    // Load data from Firebase
+    const snap = await get(codeRef());
+    if (snap.exists()) {
+      const d = snap.val();
+      PATIENT = d.patient || {};
+      DOCTOR  = d.doctor  || {};
+      MEDS    = d.meds    ? Object.values(d.meds) : [];
+      LOG     = d.log     || {};
+      GS      = d.gs      || { url:'', connected:false };
+    } else {
+      // New patient — write skeleton
+      await set(codeRef(), { patient:{}, doctor:{}, meds:{}, log:{}, gs:{} });
+    }
+
+    // Real-time listener
+    onValue(codeRef(), snap => {
+      if (!snap.exists()) return;
+      const d = snap.val();
+      PATIENT = d.patient || {};
+      DOCTOR  = d.doctor  || {};
+      MEDS    = d.meds    ? Object.values(d.meds) : [];
+      LOG     = d.log     || {};
+      GS      = d.gs      || GS;
+      updatePatientStrip();
+      renderActive();
+      scheduleNotifs();
+    });
+
+    setSyncStatus('ok', 'Sincronizado en tiempo real 🟢');
+    document.getElementById('loading').style.opacity='0';document.getElementById('loading').style.transition='opacity .3s';setTimeout(()=>document.getElementById('loading').style.display='none',300);
+
+    // Initialise UI
+    updatePatientStrip();
+    checkNotifPerm();
+    document.getElementById('share-code').textContent = CODE;
+    setTimeDefault();
+    renderActive();
+    scheduleNotifs();
+
+    if (!PATIENT.name) setTimeout(() => openModal('patient-modal'), 800);
+
+  } catch(e) {
+    setSyncStatus('err', 'Error de conexión ❌');
+    document.getElementById('loading').style.opacity='0';document.getElementById('loading').style.transition='opacity .3s';setTimeout(()=>document.getElementById('loading').style.display='none',300);
+    toast('❌ Error Firebase: ' + e.message, 4000);
+  }
+}
+
+// ── FIREBASE WRITE HELPERS ───────────────────────────────────
+async function fbSet(path, val) {
+  await set(ref(db, `patients/${CODE}/${path}`), val);
+}
+async function fbUpdate(path, val) {
+  await update(ref(db, `patients/${CODE}/${path}`), val);
+}
+
+// ── SYNC STATUS ──────────────────────────────────────────────
+function setSyncStatus(type, msg) {
+  const bar = document.getElementById('sync-bar');
+  const txt = document.getElementById('sync-txt');
+  bar.className = type;
+  txt.textContent = msg;
+}
+
+// ── CLOCK ─────────────────────────────────────────────────────
+function tickClock() {
+  document.getElementById('live-clock').textContent =
+    new Date().toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+}
+setInterval(tickClock, 1000); tickClock();
+
+// ── DATE HELPERS ─────────────────────────────────────────────
+const pad    = n => String(n).padStart(2,'0');
+const dkFn   = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const todayDk= () => dkFn(new Date());
+const logKey = (dt,mid,t) => `${dt}__${mid}__${t}`;  // Firebase-safe (no dots/slashes)
+const isTaken= (dt,mid,t) => !!LOG[logKey(dt,mid,t)];
+
+async function toggleTaken(date, mid, t) {
+  const k = logKey(date, mid, t);
+  if (LOG[k]) {
+    delete LOG[k];
+    await fbSet(`log/${k}`, null);
+  } else {
+    LOG[k] = Date.now();
+    await fbSet(`log/${k}`, Date.now());
+    pushGS(date, mid, t);
+  }
+  renderActive();
+}
+
+// ── UI HELPERS ────────────────────────────────────────────────
+function toast(msg, ms=2600) {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.style.opacity='1'; el.style.transform='translateX(-50%) translateY(0)';
+  clearTimeout(window._tt);
+  window._tt = setTimeout(()=>{ el.style.opacity='0'; el.style.transform='translateX(-50%) translateY(16px)'; }, ms);
+}
+function openModal(id)  { document.getElementById(id).classList.add('show'); }
+function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+document.querySelectorAll('.overlay').forEach(o =>
+  o.addEventListener('click', e => { if(e.target===o) o.classList.remove('show'); }));
+
+function sw(tab) {
+  activeTab = tab;
+  document.querySelectorAll('.tab').forEach((t,i) =>
+    t.classList.toggle('active', ['today','week','history','doctor','settings'][i]===tab));
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-'+tab).classList.add('active');
+  document.getElementById('fab').style.display =
+    ['today','week','settings'].includes(tab) ? 'flex' : 'none';
+  renderActive();
+}
+function renderActive() {
+  if (activeTab==='today')   renderToday();
+  if (activeTab==='week')    renderWeek();
+  if (activeTab==='history') renderHistory();
+  if (activeTab==='doctor')  renderDoctor();
+  if (activeTab==='settings') renderSettings();
+}
+
+// ── PATIENT ───────────────────────────────────────────────────
+function updatePatientStrip() {
+  const strip = document.getElementById('p-strip');
+  if (!PATIENT.name) { strip.style.display='none'; return; }
+  strip.style.display='flex';
+  document.getElementById('p-nm').textContent = PATIENT.name + ' · Tx. ' + (PATIENT.type||'');
+  let meta = 'Código: ' + CODE;
+  if (PATIENT.tdate) {
+    const days = Math.floor((Date.now() - new Date(PATIENT.tdate+'T12:00:00'))/86400000);
+    meta += ' · Día +' + days + ' post-tx';
+  }
+  document.getElementById('p-mt').textContent = meta;
+  const ini = PATIENT.name.split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();
+  document.getElementById('p-av').textContent = ini||'?';
+}
+function openPatientModal() {
+  document.getElementById('p-name').value  = PATIENT.name   ||'';
+  document.getElementById('p-type').value  = PATIENT.type   ||'Renal';
+  document.getElementById('p-tdate').value = PATIENT.tdate  ||'';
+  document.getElementById('p-center').value= PATIENT.center ||'';
+  openModal('patient-modal');
+}
+async function savePatient() {
+  PATIENT = {
+    name:   document.getElementById('p-name').value.trim(),
+    type:   document.getElementById('p-type').value,
+    tdate:  document.getElementById('p-tdate').value,
+    center: document.getElementById('p-center').value.trim()
+  };
+  await fbSet('patient', PATIENT);
+  updatePatientStrip(); closeModal('patient-modal');
+  toast('✅ Paciente guardado');
+}
+
+// ── MEDS HELPERS ──────────────────────────────────────────────
+function medsForDay(dow) { return MEDS.filter(m=>(m.days||[0,1,2,3,4,5,6]).includes(dow)); }
+function schedItems(dateStr, dow) {
+  const items=[];
+  medsForDay(dow).forEach(med=>(med.times||[]).forEach(t=>items.push({med,time:t,taken:isTaken(dateStr,med.id,t)})));
+  return items.sort((a,b)=>a.time.localeCompare(b.time));
+}
+
+// ── RENDER TODAY ──────────────────────────────────────────────
+function renderToday() {
+  const now = new Date();
+  const d   = dkFn(now), dow = now.getDay();
+  const nowM= now.getHours()*60+now.getMinutes();
+
+  document.getElementById('t-title').textContent = DAYS[dow]+' '+now.getDate()+' de '+MONTHS[now.getMonth()];
+  document.getElementById('t-sub').textContent   = now.getFullYear();
+
+  const items = schedItems(d, dow);
+  const pw    = document.getElementById('prog-wrap');
+  const sc    = document.getElementById('today-sched');
+
+  if (!items.length) {
+    pw.style.display='none';
+    sc.innerHTML=`<div class="empty"><div class="ico">💊</div><p>Sin medicamentos para hoy.<br>Tocá <b>+</b> para agregar.</p></div>`;
+    return;
+  }
+  const tk  = items.filter(i=>i.taken).length;
+  const pct = Math.round(tk/items.length*100);
+  pw.style.display='flex';
+  document.getElementById('r-fg').style.strokeDashoffset = CIRC-(pct/100)*CIRC;
+  document.getElementById('r-pct').textContent  = pct+'%';
+  document.getElementById('r-frac').textContent = tk+'/'+items.length;
+
+  const grp={};
+  items.forEach(i=>{ const h=i.time.slice(0,2)+':00'; (grp[h]||(grp[h]=[])).push(i); });
+  sc.innerHTML = Object.keys(grp).sort().map(h=>`
+    <div class="time-group" style="margin-bottom:10px">
+      <div class="tg-lbl">${h}</div>
+      ${grp[h].map(({med,time,taken})=>medCardHTML(med,time,taken,d,nowM)).join('')}
+    </div>`).join('');
+}
+
+function medCardHTML(med, time, taken, dateStr, nowM) {
+  const [hh,mm]= time.split(':').map(Number);
+  const itemM  = hh*60+mm, diff=itemM-nowM;
+  const cls    = taken?'taken': diff>=-5&&diff<=5?'due': diff<-5&&!taken?'overdue':'';
+  const cd     = med.color||'#3eb575';
+  const cdim   = cd+'22';
+  return `<div class="med-card ${cls}" style="--cc:${cd};--cd:${cdim}">
+    <div class="mc-icon">${(med.form||'💊').split(' ')[0]}</div>
+    <div class="mc-body">
+      <div class="mc-name">${med.name}</div>
+      <div class="mc-sub">${med.form||''} ${med.notes?'· '+med.notes:''}</div>
+      <div class="mc-dose">${med.dose||''}</div>
+    </div>
+    <div class="mc-right"><div class="tbadge">${time}</div></div>
+    <div class="chk ${taken?'on':''}" onclick="window._toggle('${dateStr}','${med.id}','${time}')">${taken?'✓':''}</div>
+  </div>`;
+}
+window._toggle = toggleTaken;
+
+// ── RENDER WEEK ───────────────────────────────────────────────
+function renderWeek() {
+  const now = new Date();
+  if (!selCalDay) selCalDay = dkFn(now);
+  const days7=[];
+  for(let i=0;i<7;i++){const d=new Date(now);d.setDate(d.getDate()-d.getDay()+i);days7.push(d);}
+
+  document.getElementById('week-strip').innerHTML = days7.map(d=>{
+    const ds=dkFn(d), act=ds===selCalDay, tod=ds===dkFn(now);
+    return `<div class="wd ${act?'active':''}" onclick="window._selCal('${ds}')">
+      <div class="wd-n">${DAYS[d.getDay()]}</div>
+      <div class="wd-d">${d.getDate()}</div>
+      ${medsForDay(d.getDay()).length?'<div class="wd-dot"></div>':''}
+    </div>`;
+  }).join('');
+
+  const sd    = new Date(selCalDay+'T12:00:00');
+  const items = schedItems(selCalDay, sd.getDay());
+  const sc    = document.getElementById('week-sched');
+  const nowM  = selCalDay===dkFn(now)?new Date().getHours()*60+new Date().getMinutes():-9999;
+
+  if (!items.length) { sc.innerHTML=`<div class="empty"><div class="ico">✅</div><p>Sin medicamentos este día.</p></div>`; return; }
+  sc.innerHTML = items.map(({med,time,taken})=>`<div style="margin-bottom:7px">${medCardHTML(med,time,taken,selCalDay,nowM)}</div>`).join('');
+}
+window._selCal = d => { selCalDay=d; renderWeek(); };
+
+// ── RENDER HISTORY ────────────────────────────────────────────
+function renderHistory() {
+  const now=new Date();
+  let totalD=0, takenD=0;
+  const weekBuckets=[];
+  for(let w=3;w>=0;w--){
+    const week=[];
+    for(let d=0;d<7;d++){
+      const day=new Date(now);
+      day.setDate(day.getDate()-w*7-(now.getDay()-d));
+      if(day>now){week.push({day,pct:null});continue;}
+      const ds=dkFn(day), dow=day.getDay();
+      const items=schedItems(ds,dow);
+      if(!items.length){week.push({day,pct:null});continue;}
+      const tk=items.filter(i=>i.taken).length;
+      totalD+=items.length; takenD+=tk;
+      week.push({day,items,tk,total:items.length,pct:Math.round(tk/items.length*100),ds});
+    }
+    weekBuckets.push(week);
+  }
+  const gPct=totalD?Math.round(takenD/totalD*100):0;
+  const missed=totalD-takenD;
+  let best=0,cur=0;
+  [...weekBuckets.flat()].filter(x=>x.pct!==null).reverse().forEach(x=>{
+    if(x.pct===100){cur++;best=Math.max(best,cur);}else cur=0;
+  });
+  document.getElementById('comp-grid').innerHTML=`
+    <div class="c-tile ${gPct>=90?'good':gPct>=70?'warn':'bad'}"><div class="big">${gPct}%</div><div class="lbl">Cumplimiento 4 sem.</div></div>
+    <div class="c-tile ${missed===0?'good':missed<10?'warn':'bad'}"><div class="big">${missed}</div><div class="lbl">Dosis omitidas</div></div>
+    <div class="c-tile good"><div class="big">${best}</div><div class="lbl">Racha perfecta (días)</div></div>
+    <div class="c-tile ${takenD>=totalD*.95?'good':'warn'}"><div class="big">${takenD}/${totalD}</div><div class="lbl">Total tomadas</div></div>`;
+
+  document.getElementById('hist-weeks').innerHTML = weekBuckets.map(week=>{
+    const f=week.find(x=>x.day);
+    const label=f?`Semana del ${f.day.getDate()}/${f.day.getMonth()+1}`:'Semana';
+    const bars=week.map(({day,pct})=>{
+      if(pct===null) return `<div class="hday"><div class="hday-lbl">${DAYS[day.getDay()]}</div><div class="hday-bw"></div><div class="hday-pct">—</div></div>`;
+      const fc=pct===100?'':pct>=70?'partial':'zero';
+      const h=pct===0?4:Math.max(6,pct*.58);
+      return `<div class="hday"><div class="hday-lbl">${DAYS[day.getDay()]}</div><div class="hday-bw"><div class="hday-bf ${fc}" style="height:${h}%"></div></div><div class="hday-pct">${pct}%</div></div>`;
+    }).join('');
+    const ms={};
+    week.filter(x=>x.items).forEach(({items,ds})=>items.forEach(({med,taken})=>{
+      if(!ms[med.id]) ms[med.id]={med,total:0,taken:0};
+      ms[med.id].total++;if(taken)ms[med.id].taken++;
+    }));
+    const detail=Object.values(ms).map(({med,total,taken})=>{
+      const p=Math.round(taken/total*100);
+      const col=p>=90?'var(--gl)':p>=70?'var(--amber)':'var(--red)';
+      return `<div class="hist-row"><div class="hist-dot" style="background:${med.color||'var(--green)'}"></div><div class="hist-name">${med.name}</div><div class="hist-stat" style="color:${col}">${taken}/${total} (${p}%)</div></div>`;
+    }).join('');
+    return `<div class="hist-week"><div class="hist-week-title">${label}</div><div class="hist-week-bar">${bars}</div>${detail?`<div class="hist-detail">${detail}</div>`:''}</div>`;
+  }).join('');
+}
+
+// ── RENDER DOCTOR ─────────────────────────────────────────────
+function renderDoctor() {
+  const d=DOCTOR, el=document.getElementById('doc-display');
+  if(!d.name){el.innerHTML=`<div class="empty"><div class="ico">👨‍⚕️</div><p>Sin datos del médico.</p></div>`;return;}
+  const wa=(d.wa||'').replace(/\D/g,'');
+  const appt=d.appt?new Date(d.appt).toLocaleString('es-AR',{dateStyle:'long',timeStyle:'short'}):'';
+  el.innerHTML=`
+    <div class="doc-card"><div class="doc-av">🩺</div><div><div class="doc-name">${d.name}</div><div class="doc-spec">${d.spec||''}</div><div class="doc-spec" style="color:var(--tm)">${d.inst||''}</div></div></div>
+    ${appt?`<div class="card" style="margin-top:8px;display:flex;align-items:center;gap:10px"><span style="font-size:18px">📅</span><div><div style="font-size:11px;color:var(--tm);font-weight:700">PRÓXIMA CITA</div><div style="font-size:14px;font-weight:600;margin-top:2px">${appt}</div></div></div>`:''}
+    <div style="display:flex;flex-direction:column;gap:6px;margin-top:8px">
+      ${d.tel?`<a class="contact-row" href="tel:${d.tel}"><div class="ci tel">📞</div><div class="cl"><div class="ct">Consultorio</div><div class="cv">${d.tel}</div></div><span>›</span></a>`:''}
+      ${d.wa?`<a class="contact-row" href="https://wa.me/${wa}" target="_blank"><div class="ci wha">💬</div><div class="cl"><div class="ct">WhatsApp</div><div class="cv">${d.wa}</div></div><span>›</span></a>`:''}
+      ${d.email?`<a class="contact-row" href="mailto:${d.email}"><div class="ci mail">✉️</div><div class="cl"><div class="ct">Email</div><div class="cv">${d.email}</div></div><span>›</span></a>`:''}
+      ${d.urg?`<a class="contact-row" href="tel:${d.urg}" style="border-color:var(--red)"><div class="ci urg">🚨</div><div class="cl"><div class="ct" style="color:var(--red)">Urgencias</div><div class="cv">${d.urg}</div></div><span>›</span></a>`:''}
+    </div>
+    ${d.notes?`<div style="margin-top:8px"><div class="sec-lbl">Indicaciones</div><div class="note-box" style="margin-top:5px">${d.notes}</div></div>`:''}
+    <button class="btn btn-g" onclick="openDoctorModal()" style="margin-top:10px">✏️ Editar</button>`;
+}
+function openDoctorModal() {
+  ['name','spec','inst','tel','wa','email','urg','appt','notes'].forEach(f=>{
+    const el=document.getElementById('d-'+f); if(el) el.value=DOCTOR[f]||'';
+  });
+  openModal('doctor-modal');
+}
+async function saveDoctor() {
+  DOCTOR={
+    name: document.getElementById('d-name').value.trim(),
+    spec: document.getElementById('d-spec').value.trim(),
+    inst: document.getElementById('d-inst').value.trim(),
+    tel:  document.getElementById('d-tel').value.trim(),
+    wa:   document.getElementById('d-wa').value.trim(),
+    email:document.getElementById('d-email').value.trim(),
+    urg:  document.getElementById('d-urg').value.trim(),
+    appt: document.getElementById('d-appt').value,
+    notes:document.getElementById('d-notes').value.trim()
+  };
+  await fbSet('doctor', DOCTOR);
+  closeModal('doctor-modal'); renderDoctor();
+  toast('✅ Datos del médico guardados');
+}
+
+// ── RENDER SETTINGS ───────────────────────────────────────────
+function renderSettings() {
+  const el=document.getElementById('s-meds-list');
+  if(!MEDS.length){el.innerHTML=`<div class="empty" style="padding:20px"><div class="ico">📋</div><p>Sin medicamentos.</p></div>`;return;}
+  el.innerHTML=MEDS.map(m=>`
+    <div class="smi" onclick="openEditMed('${m.id}')">
+      <div class="smi-dot" style="background:${m.color||'#3eb575'}"></div>
+      <span style="font-size:17px">${(m.form||'💊').split(' ')[0]}</span>
+      <div style="flex:1"><div class="smi-name">${m.name}</div><div class="smi-times">${(m.times||[]).join(' · ')} · ${m.dose||'sin dosis'}</div></div>
+      <span style="color:var(--tm)">›</span>
+    </div>`).join('');
+  document.getElementById('gs-url').value=GS.url||'';
+  updateGSUI();
+}
+
+// ── MEDS CRUD ─────────────────────────────────────────────────
+function openAddMed() {
+  editId=null; curTimes=[]; selDays=[0,1,2,3,4,5,6];
+  ['m-name','m-dose','m-notes'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('m-color').value='#3eb575';
+  document.getElementById('m-form').value='💊 Comprimido';
+  document.getElementById('med-mtitle').textContent='Nuevo Medicamento';
+  document.getElementById('del-btn').style.display='none';
+  renderTimesWrap(); renderDayPicks(); openModal('med-modal');
+}
+function openEditMed(id) {
+  const m=MEDS.find(x=>x.id===id); if(!m) return;
+  editId=id; curTimes=[...(m.times||[])]; selDays=[...(m.days||[0,1,2,3,4,5,6])];
+  document.getElementById('m-name').value  = m.name||'';
+  document.getElementById('m-dose').value  = m.dose||'';
+  document.getElementById('m-notes').value = m.notes||'';
+  document.getElementById('m-color').value = m.color||'#3eb575';
+  document.getElementById('m-form').value  = m.form||'💊 Comprimido';
+  document.getElementById('med-mtitle').textContent='Editar Medicamento';
+  document.getElementById('del-btn').style.display='block';
+  renderTimesWrap(); renderDayPicks(); openModal('med-modal');
+}
+function addTime() {
+  const v=document.getElementById('m-time-inp').value;
+  if(!v) return;
+  if(!curTimes.includes(v)){curTimes.push(v);curTimes.sort();}
+  document.getElementById('m-time-inp').value='';
+  renderTimesWrap();
+}
+window.removeTime = t => { curTimes=curTimes.filter(x=>x!==t); renderTimesWrap(); };
+function renderTimesWrap() {
+  document.getElementById('times-wrap').innerHTML=curTimes.map(t=>
+    `<div class="tchip">${t}<span class="x" onclick="removeTime('${t}')">×</span></div>`).join('');
+}
+function renderDayPicks() {
+  document.querySelectorAll('.dpick').forEach(el=>{
+    const d=+el.dataset.d;
+    el.classList.toggle('on',selDays.includes(d));
+    el.onclick=()=>{selDays.includes(d)?selDays=selDays.filter(x=>x!==d):selDays.push(d);renderDayPicks();};
+  });
+}
+async function saveMed() {
+  const name=document.getElementById('m-name').value.trim();
+  if(!name){toast('⚠️ Ingresá el nombre');return;}
+  if(!curTimes.length){toast('⚠️ Agregá al menos un horario');return;}
+  const id = editId || Date.now().toString(36);
+  const m  = {
+    id, name,
+    form: document.getElementById('m-form').value,
+    dose: document.getElementById('m-dose').value.trim(),
+    notes:document.getElementById('m-notes').value.trim(),
+    color:document.getElementById('m-color').value,
+    times:curTimes, days:selDays
+  };
+  await fbSet(`meds/${id}`, m);
+  closeModal('med-modal'); toast('✅ Medicamento guardado');
+  scheduleNotifs();
+}
+async function deleteMed() {
+  if(!editId||!confirm('¿Eliminar este medicamento?'))return;
+  await fbSet(`meds/${editId}`, null);
+  closeModal('med-modal'); toast('🗑 Eliminado');
+}
+
+// ── NOTIFICATIONS ─────────────────────────────────────────────
+function checkNotifPerm() {
+  // Guard: Notification API may not be available in all contexts
+  if (typeof Notification === "undefined") {
+    const el = document.getElementById("notif-warn");
+    if (el) el.style.display = "none";
+    return;
+  }
+  const el=document.getElementById('notif-warn');
+  if(!('Notification'in window)){el.style.display='none';return;}
+  el.style.display=Notification.permission==='default'?'flex':'none';
+  if(Notification.permission==='granted') scheduleNotifs();
+}
+async function reqNotif() {
+  if (typeof Notification === "undefined") { toast("⚠️ Abrí la app desde un servidor o Chrome"); return; }
+  await Notification.requestPermission();
+  checkNotifPerm();
+  toast('🔔 Notificaciones activadas');
+  scheduleNotifs();
+}
+function scheduleNotifs() {
+  if (typeof Notification === "undefined") return;
+  notifTimers.forEach(clearTimeout); notifTimers=[];
+  if(Notification.permission!=='granted') return;
+  const now=new Date(), d=dkFn(now), dow=now.getDay();
+  const nowM=now.getHours()*60+now.getMinutes();
+  MEDS.forEach(med=>{
+    if(!(med.days||[0,1,2,3,4,5,6]).includes(dow)) return;
+    (med.times||[]).forEach(t=>{
+      const [h,m]=t.split(':').map(Number), itemM=h*60+m;
+      const ms=(itemM-nowM)*60000;
+      if(ms>0&&!isTaken(d,med.id,t)){
+        if(ms>300000) notifTimers.push(setTimeout(()=>fireNotif(`⏰ En 5 min: ${med.name}`,`Preparate: ${med.dose||''}`,med,t,d,false),ms-300000));
+        notifTimers.push(setTimeout(()=>fireNotif(`💊 ${med.name}`,`${med.dose||''} ${med.notes||''}`.trim(),med,t,d,true),ms));
+      }
+    });
+  });
+}
+function fireNotif(title,body,med,t,d,showMod) {
+  const n=new Notification(title,{body,tag:'mc-'+med.id+t,requireInteraction:true});
+  n.onclick=()=>{window.focus();if(showMod)showAlert(med,t,d);};
+  if(showMod) showAlert(med,t,d);
+}
+function showAlert(med,t,d) {
+  alertPending={med,t,d};
+  document.getElementById('al-ico').textContent=(med.form||'💊').split(' ')[0];
+  document.getElementById('al-name').textContent=med.name;
+  document.getElementById('al-det').textContent=`${med.dose||''} — ${t}${med.notes?' · '+med.notes:''}`;
+  openModal('alert-modal');
+}
+async function markAlertTaken() {
+  if(!alertPending) return;
+  const {med,t,d}=alertPending;
+  LOG[logKey(d,med.id,t)]=Date.now();
+  await fbSet(`log/${logKey(d,med.id,t)}`,Date.now());
+  closeModal('alert-modal'); toast('✅ '+med.name+' marcado'); renderActive();
+}
+function snoozeAlert() {
+  closeModal('alert-modal');
+  if(!alertPending) return;
+  const {med,t,d}=alertPending;
+  setTimeout(()=>showAlert(med,t,d),600000);
+  toast('⏰ Pospuesto 10 min');
+}
+
+// ── SHARE ─────────────────────────────────────────────────────
+function copyLink() {
+  const url=location.origin+location.pathname+'?code='+CODE;
+  navigator.clipboard.writeText(url).catch(()=>{});
+  toast('📋 Link copiado — compartilo por WhatsApp');
+}
+function joinCode() {
+  const c=document.getElementById('join-inp').value.trim().toUpperCase();
+  if(c.length<4){toast('⚠️ Código inválido');return;}
+  localStorage.setItem('mcp_code',c);
+  location.href=location.pathname+'?code='+c;
+}
+
+// ── GOOGLE SHEETS (optional) ──────────────────────────────────
+function updateGSUI() {
+  const el=document.getElementById('gs-st'), t=document.getElementById('gs-txt');
+  if(GS.url&&GS.connected){el.className='gs-st ok';t.textContent='Conectado con Google Sheets ✅';}
+  else{el.className='gs-st err';t.textContent=GS.url?'Sin verificar':'No configurado';}
+}
+async function saveGS() {
+  GS.url=document.getElementById('gs-url').value.trim();
+  try{await fetch(GS.url+'?action=ping',{method:'GET',mode:'no-cors'});GS.connected=true;}catch(e){GS.connected=false;}
+  await fbSet('gs',GS); updateGSUI();
+  toast(GS.connected?'✅ Google Sheets conectado':'⚠️ URL guardada (verificá la URL)');
+}
+async function syncGS() {
+  if(!GS.url){toast('⚠️ Configurá Google Sheets primero');return;}
+  try{
+    await fetch(GS.url,{method:'POST',mode:'no-cors',body:JSON.stringify({action:'sync',code:CODE,patient:PATIENT,meds:MEDS,log:LOG})});
+    toast('✅ Sincronizado con Google Sheets');
+  }catch(e){toast('❌ Error al sincronizar');}
+}
+async function pushGS(date,mid,t) {
+  if(!GS.url||!GS.connected) return;
+  const med=MEDS.find(m=>m.id===mid);
+  try{await fetch(GS.url,{method:'POST',mode:'no-cors',body:JSON.stringify({action:'log',code:CODE,date,medId:mid,medName:med?.name||'',time:t,taken:true,ts:Date.now()})});}catch(e){}
+}
+
+// ── MISC ──────────────────────────────────────────────────────
+function resetApp() {
+  if(!confirm('¿Borrar todos los datos locales?')) return;
+  localStorage.clear(); location.reload();
+}
+function setTimeDefault() {
+  const n=new Date();
+  document.getElementById('m-time-inp').value=pad(n.getHours()+1)+':00';
+}
+
+// Refresh every minute
+setInterval(()=>{scheduleNotifs();renderActive();},60000);
+
+// Expose globals needed by inline onclick
+window.openModal=openModal; window.closeModal=closeModal;
+window.openAddMed=openAddMed; window.openEditMed=openEditMed;
+window.openPatientModal=openPatientModal; window.savePatient=savePatient;
+window.openDoctorModal=openDoctorModal; window.saveDoctor=saveDoctor;
+window.saveMed=saveMed; window.deleteMed=deleteMed;
+window.addTime=addTime; window.markAlertTaken=markAlertTaken; window.snoozeAlert=snoozeAlert;
+window.copyLink=copyLink; window.joinCode=joinCode;
+window.saveGS=saveGS; window.syncGS=syncGS; window.resetApp=resetApp;
+window.reqNotif=reqNotif; window.sw=sw;
+
+// ── GO ──────────────
+  // Max 2.5s loading screen - never block user
+  setTimeout(()=>{
+    const ld=document.getElementById('loading');
+    if(ld&&ld.style.display!=='none'){ld.style.opacity='0';ld.style.transition='opacity .3s';setTimeout(()=>ld.style.display='none',300);}
+  }, 2500);
+  init();
+</script>
+</body>
+</html>
