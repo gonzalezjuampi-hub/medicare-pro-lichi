@@ -1016,10 +1016,22 @@ function scheduleNotifs() {
     });
   });
 }
-function fireNotif(title,body,med,t,d,showMod) {
-  const n=new Notification(title,{body,tag:'mc-'+med.id+t,requireInteraction:true});
-  n.onclick=()=>{window.focus();if(showMod)showAlert(med,t,d);};
-  if(showMod) showAlert(med,t,d);
+function fireNotif(title, body, med, t, d, showMod) {
+  if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+    navigator.serviceWorker.ready.then(reg => {
+      reg.showNotification(title, {
+        body: body,
+        vibrate: [200, 100, 200],
+        tag: 'med-' + med.id + t,
+        requireInteraction: true
+      });
+    });
+  } else {
+    new Notification(title, { body: body });
+  }
+  if (showMod) showAlert(med, t, d);
+}
+
 }
 function showAlert(med,t,d) {
   alertPending={med,t,d};
