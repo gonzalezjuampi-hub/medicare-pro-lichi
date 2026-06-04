@@ -1112,11 +1112,7 @@ window.reqNotif=reqNotif; window.sw=sw;
     if(ld&&ld.style.display!=='none'){ld.style.opacity='0';ld.style.transition='opacity .3s';setTimeout(()=>ld.style.display='none',300);}
   }, 2500);
   init();
-</script>
-    if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./sw.js')
-      .then(() => console.log("SW Activo"))
-      .catch(err => console.log("Error SW:", err));
-  }
+  if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js').catch(()=>{});}
+ </script>
 </body>
 </html>
