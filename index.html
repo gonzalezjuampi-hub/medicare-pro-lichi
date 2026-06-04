@@ -1009,8 +1009,8 @@ function scheduleNotifs() {
     (med.times||[]).forEach(t=>{
       const [h,m]=t.split(':').map(Number), itemM=h*60+m;
       const ms=(itemM-nowM)*60000;
-      if(ms>0&&!isTaken(d,med.id,t)){
-        if(ms>300000) notifTimers.push(setTimeout(()=>fireNotif(`⏰ En 5 min: ${med.name}`,`Preparate: ${med.dose||''}`,med,t,d,false),ms-300000));
+      if(ms>=0&&!isTaken(d,med.id,t)){
+        if(ms>0) notifTimers.push(setTimeout(()=>fireNotif(`⏰ En 5 min: ${med.name}`,`Preparate: ${med.dose||''}`,med,t,d,false),ms-300000));
         notifTimers.push(setTimeout(()=>fireNotif(`💊 ${med.name}`,`${med.dose||''} ${med.notes||''}`.trim(),med,t,d,true),ms));
       }
     });
