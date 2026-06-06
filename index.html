@@ -271,6 +271,21 @@ self.addEventListener('fetch', e => {
   <p id="loading-msg">Iniciando...</p>
 </div>
 
+  <!-- MODAL DE AYUDA ALARMAS -->
+<div id="ayuda-modal" class="modal" style="display:none;">
+  <div class="modal-content">
+    <h3>🔔 Configuración de Alarmas</h3>
+    <p>Para asegurar que las alertas de tus medicamentos suenen siempre a tiempo:</p>
+    <ol style="text-align: left; margin-bottom: 15px;">
+      <li>Mantén presionado el icono de <b>MediCare Pro</b> en tu pantalla de inicio.</li>
+      <li>Toca la <b>"i"</b> (Información de la app) y ve a <b>Notificaciones</b>.</li>
+      <li>Toca sobre el texto <b>"Aplicaciones web"</b>.</li>
+      <li>Elige el <b>Sonido</b> que prefieras y cambia la <b>Importancia</b> a <b>"Urgente"</b> o "Alta".</li>
+    </ol>
+    <button onclick="closeModal('ayuda-modal')" class="btn">Entendido</button>
+  </div>
+</div>
+
 <!-- HEADER -->
 <header>
   <div class="logo">
