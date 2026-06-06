@@ -371,8 +371,7 @@ self.addEventListener('fetch', e => {
   <div id="page-doctor" class="page">
     <div id="doc-display"><div class="empty"><div class="ico">👨‍⚕️</div><p>Sin datos del médico.<br>Tocá el botón para agregar.</p></div></div>
     <button class="btn btn-p" onclick="openDoctorModal()">+ Agregar / Editar médico</button>
-    <button onclick="openModal('ayuda-modal')" class="btn" style="margin-top: 10px; background-color: #555;">🔔 ¿No suenan las alertas?</button>
-  </div>
+   </div>
 
   <!-- SETTINGS -->
   <div id="page-settings" class="page">
@@ -385,6 +384,7 @@ self.addEventListener('fetch', e => {
       <div class="fg"><label>URL del Web App</label><input id="gs-url" type="url" placeholder="https://script.google.com/macros/s/..."></div>
       <button class="btn btn-p" onclick="saveGS()">Guardar y probar</button>
       <button class="btn btn-g" onclick="syncGS()" style="margin-top:5px">☁️ Sincronizar ahora</button>
+      <button class="btn btn-p" onclick="openModal('ayuda-modal')" style="margin-top: 5px;">🔔 ¿No suenan las alertas?</button>
     </div>
 
     <div class="sec-lbl" style="margin-top:8px">Paciente</div>
