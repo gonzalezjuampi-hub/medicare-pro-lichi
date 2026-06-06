@@ -994,6 +994,32 @@ async function deleteMed() {
   closeModal('med-modal'); toast('🗑 Eliminado');
 }
 
+  // ── ALARM SOUND (Web Audio API) ──────────────────────────────
+let alarmInterval = null;
+let audioCtx = null;
+function getAudioCtx(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();return audioCtx;}
+function playBeep(freq,dur,vol,delay){
+  try{
+    const ctx=getAudioCtx(),osc=ctx.createOscillator(),gain=ctx.createGain();
+    osc.connect(gain);gain.connect(ctx.destination);
+    osc.frequency.value=freq;osc.type='sine';
+    gain.gain.setValueAtTime(0.001,ctx.currentTime+delay);
+    gain.gain.exponentialRampToValueAtTime(vol,ctx.currentTime+delay+0.02);
+    gain.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+delay+dur);
+    osc.start(ctx.currentTime+delay);osc.stop(ctx.currentTime+delay+dur+0.05);
+  }catch(e){}
+}
+function playAlarmPattern(){playBeep(880,.18,1.0,0);playBeep(880,.18,1.0,.25);playBeep(1100,.35,1.0,.5);}
+function startAlarm(){
+  try{if(audioCtx&&audioCtx.state==='suspended')audioCtx.resume();}catch(e){}
+  playAlarmPattern();
+  alarmInterval=setInterval(playAlarmPattern,2500);
+  setTimeout(stopAlarm,120000);
+}
+function stopAlarm(){if(alarmInterval){clearInterval(alarmInterval);alarmInterval=null;}}
+document.addEventListener('touchstart',()=>{try{const c=getAudioCtx();if(c.state==='suspended')c.resume();}catch(e){}},{once:true});
+document.addEventListener('click',()=>{try{const c=getAudioCtx();if(c.state==='suspended')c.resume();}catch(e){}},{once:true});
+  
 // ── NOTIFICATIONS ─────────────────────────────────────────────
 function checkNotifPerm() {
   // Guard: Notification API may not be available in all contexts
@@ -1053,8 +1079,11 @@ function showAlert(med,t,d) {
   document.getElementById('al-name').textContent=med.name;
   document.getElementById('al-det').textContent=`${med.dose||''} — ${t}${med.notes?' · '+med.notes:''}`;
   openModal('alert-modal');
+  startAlarm();
+  if(navigator.vibrate) navigator.vibrate([500,200,500,200,500,200,1000]);
 }
 async function markAlertTaken() {
+  stopAlarm();
   if(!alertPending) return;
   const {med,t,d}=alertPending;
   LOG[logKey(d,med.id,t)]=Date.now();
@@ -1062,6 +1091,7 @@ async function markAlertTaken() {
   closeModal('alert-modal'); toast('✅ '+med.name+' marcado'); renderActive();
 }
 function snoozeAlert() {
+  stopAlarm();
   closeModal('alert-modal');
   if(!alertPending) return;
   const {med,t,d}=alertPending;
