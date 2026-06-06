@@ -282,7 +282,7 @@ self.addEventListener('fetch', e => {
       <li>Toca sobre el texto <b>"Aplicaciones web"</b>.</li>
       <li>Elige el <b>Sonido</b> que prefieras y cambia la <b>Importancia</b> a <b>"Urgente"</b> o "Alta".</li>
     </ol>
-    <button onclick="closeModal('ayuda-modal')" class="btn">Entendido</button>
+    <button onclick="document.getElementById('ayuda-modal').style.display='none'" class="btn">Entendido</button>
   </div>
 </div>
 
@@ -384,7 +384,7 @@ self.addEventListener('fetch', e => {
       <div class="fg"><label>URL del Web App</label><input id="gs-url" type="url" placeholder="https://script.google.com/macros/s/..."></div>
       <button class="btn btn-p" onclick="saveGS()">Guardar y probar</button>
       <button class="btn btn-g" onclick="syncGS()" style="margin-top:5px">☁️ Sincronizar ahora</button>
-      <button class="btn btn-p" onclick="openModal('ayuda-modal')" style="margin-top: 5px;">🔔 ¿No suenan las alertas?</button>
+      <button class="btn btn-p" onclick="document.getElementById('ayuda-modal').style.display='flex'" style="margin-top: 5px;">🔔 ¿No suenan las alertas?</button>
     </div>
 
     <div class="sec-lbl" style="margin-top:8px">Paciente</div>
